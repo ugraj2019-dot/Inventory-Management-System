@@ -3,9 +3,11 @@ import { Product } from "../models/productModels.js";
 
 const fields = ["name", "sku", "category", "quantity", "reorderLevel", "unitPrice", "supplier"];
 
+const scope = (role, userId) => role === "admin" ? {} : { userId };
+
 export const ProductService = {
-  getAllProducts: async (userId, search = "") => {
-    const where = { userId };
+  getAllProducts: async (userId, role, search = "") => {
+    const where = scope(role, userId);
     if (search.trim()) {
       where[Op.or] = [
         { name: { [Op.like]: `%${search.trim()}%` } },
@@ -16,9 +18,8 @@ export const ProductService = {
     return Product.findAll({ where, order: [["createdAt", "DESC"]] });
   },
 
-  getProductById: async (id, userId) => {
-    const product = await Product.findOne({ where: { id, userId } });
-    return product;
+  getProductById: async (id, userId, role) => {
+    return Product.findOne({ where: { id, ...scope(role, userId) } });
   },
 
   createProduct: async (data, userId) => {
@@ -34,11 +35,13 @@ export const ProductService = {
     });
   },
 
-  updateProduct: async (id, data, userId) => {
-    const product = await Product.findOne({ where: { id, userId } });
+  updateProduct: async (id, data, userId, role) => {
+    const product = await Product.findOne({ where: { id, ...scope(role, userId) } });
     if (!product) return null;
     if (data.sku && data.sku !== product.sku) {
-      const duplicate = await Product.findOne({ where: { sku: data.sku, userId, id: { [Op.ne]: id } } });
+      const duplicate = await Product.findOne({
+        where: { sku: data.sku, userId: product.userId, id: { [Op.ne]: id } }
+      });
       if (duplicate) {
         const error = new Error("A product with this SKU already exists");
         error.status = 409;
@@ -52,15 +55,15 @@ export const ProductService = {
     return product;
   },
 
-  deleteProduct: async (id, userId) => {
-    const product = await Product.findOne({ where: { id, userId } });
+  deleteProduct: async (id, userId, role) => {
+    const product = await Product.findOne({ where: { id, ...scope(role, userId) } });
     if (!product) return null;
     await product.destroy();
     return product;
   },
 
-  getSummary: async (userId) => {
-    const products = await Product.findAll({ where: { userId } });
+  getSummary: async (userId, role) => {
+    const products = await Product.findAll({ where: scope(role, userId) });
     return {
       totalProducts: products.length,
       totalUnits: products.reduce((sum, p) => sum + Number(p.quantity), 0),

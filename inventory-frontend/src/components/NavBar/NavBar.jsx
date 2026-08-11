@@ -33,6 +33,15 @@ export default function NavBar() {
         <NavLink to="/add" className={({isActive}) => `nav-item ${isActive ? "active" : ""}`}>
           <i className="ti ti-circle-plus nav-icon"></i> Add Product
         </NavLink>
+
+        {user.role === "admin" && (
+          <>
+            <p className="nav-section-label" style={{marginTop: "1.2rem"}}>Administration</p>
+            <NavLink to="/admin/users" className={({isActive}) => `nav-item ${isActive ? "active" : ""}`}>
+              <i className="ti ti-users nav-icon"></i> Manage Users
+            </NavLink>
+          </>
+        )}
       </nav>
 
       <div className="sidebar-footer">
@@ -40,7 +49,7 @@ export default function NavBar() {
           <div className="user-avatar">{(user.fullName || user.username || "U")[0].toUpperCase()}</div>
           <div className="user-info">
             <p className="user-name">{user.fullName || user.username}</p>
-            <p className="user-role">Inventory User</p>
+            <p className="user-role">{user.role === "admin" ? "Administrator" : "Staff"}</p>
           </div>
           <button className="btn-signout" onClick={handleLogout} title="Sign out">
             <i className="ti ti-logout"></i>

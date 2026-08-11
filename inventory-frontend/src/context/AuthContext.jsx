@@ -13,7 +13,7 @@ export function AuthProvider({ children }) {
     setIsLoading(false);
   }, []);
   function persistSession(data) {
-    const loggedInUser = { id:data.id, username:data.username, fullName:data.fullName };
+    const loggedInUser = { id:data.id, username:data.username, fullName:data.fullName, role:data.role || "staff" };
     localStorage.setItem("token", data.token); localStorage.setItem("user", JSON.stringify(loggedInUser));
     setToken(data.token); setUser(loggedInUser);
   }

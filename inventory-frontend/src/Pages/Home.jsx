@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { getInventorySummary, getProducts, deleteProduct } from "../services/productService";
 
-function ProductRow({ product, onDelete }) {
+function ProductRow({ product, onDelete, isAdmin }) {
   const low = Number(product.quantity) <= Number(product.reorderLevel);
   const out = Number(product.quantity) === 0;
   return (
@@ -26,7 +26,7 @@ function ProductRow({ product, onDelete }) {
       <td>
         <div className="action-row">
           <Link className="btn btn-sm btn-icon" to={`/product/${product.id}`} title="Edit"><i className="ti ti-pencil"></i></Link>
-          <button className="btn btn-sm btn-icon btn-danger" onClick={() => onDelete(product.id)} title="Delete"><i className="ti ti-trash"></i></button>
+          {isAdmin && <button className="btn btn-sm btn-icon btn-danger" onClick={() => onDelete(product.id)} title="Delete"><i className="ti ti-trash"></i></button>}
         </div>
       </td>
     </tr>
@@ -34,7 +34,7 @@ function ProductRow({ product, onDelete }) {
 }
 
 export default function Home() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [products, setProducts] = useState([]);
   const [summary, setSummary] = useState(null);
   const [search, setSearch] = useState("");
@@ -129,7 +129,7 @@ export default function Home() {
           <div className="table-scroll">
             <table>
               <thead><tr><th>Product</th><th>Category</th><th>Status</th><th>Stock</th><th>Unit price</th><th>Supplier</th><th></th></tr></thead>
-              <tbody>{products.map(p => <ProductRow key={p.id} product={p} onDelete={handleDelete} />)}</tbody>
+              <tbody>{products.map(p => <ProductRow key={p.id} product={p} onDelete={handleDelete} isAdmin={user?.role === "admin"} />)}</tbody>
             </table>
           </div>
         )}
