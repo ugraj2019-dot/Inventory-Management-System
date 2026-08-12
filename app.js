@@ -1,10 +1,3 @@
-/* ─────────────────────────────────────────────
-   StockBase — Inventory Management System
-   All data stored in localStorage.
-   Passwords hashed with FNV-1a.
-───────────────────────────────────────────── */
-
-/* ── Hash ────────────────────────────────────── */
 function fnv1a(str) {
   let h = 2166136261 >>> 0;
   for (let i = 0; i < str.length; i++) {
@@ -14,7 +7,6 @@ function fnv1a(str) {
   return h.toString(16);
 }
 
-/* ── State ───────────────────────────────────── */
 const S = {
   session: null,
   page: "dashboard",
@@ -43,7 +35,6 @@ const DB = {
   },
 };
 
-/* ── Seed data ───────────────────────────────── */
 function seed() {
   if (!DB.users.length) {
     DB.setUsers([
@@ -128,7 +119,6 @@ function seed() {
   }
 }
 
-/* ── Helpers ─────────────────────────────────── */
 function uid() {
   return Date.now() + Math.floor(Math.random() * 9999);
 }
@@ -152,7 +142,6 @@ function toast(msg, icon = "ti-check") {
   toastTimer = setTimeout(() => el.classList.remove("show"), 2800);
 }
 
-/* ── Router ──────────────────────────────────── */
 function goTo(page, id) {
   S.page = page;
   S.editId = id || null;
@@ -161,7 +150,6 @@ function goTo(page, id) {
   window.scrollTo(0, 0);
 }
 
-/* ── Auth ────────────────────────────────────── */
 function doLogin() {
   const u = document.getElementById("l-user").value.trim();
   const p = document.getElementById("l-pass").value;
@@ -181,7 +169,7 @@ function doLogout() {
   renderApp();
 }
 
-/* ── Render root ─────────────────────────────── */
+
 function renderApp() {
   const root = document.getElementById("root");
   if (!S.session) {
@@ -192,7 +180,7 @@ function renderApp() {
   attachNavHandlers();
 }
 
-/* ── Login page ──────────────────────────────── */
+
 function renderLogin() {
   return `
   <div id="login-page">
@@ -205,22 +193,21 @@ function renderLogin() {
       <div id="login-err"></div>
       <div class="form-group" style="margin-bottom:1rem">
         <label for="l-user">Username</label>
-        <input id="l-user" type="text" value="admin" autocomplete="username" placeholder="Username">
+        <input id="l-user" type="text" autocomplete="username" placeholder="Username">
       </div>
       <div class="form-group" style="margin-bottom:1.5rem">
         <label for="l-pass">Password</label>
-        <input id="l-pass" type="password" value="admin123" autocomplete="current-password" placeholder="Password"
+        <input id="l-pass" type="password" autocomplete="current-password" placeholder="Password"
           onkeydown="if(event.key==='Enter') doLogin()">
       </div>
       <button class="btn btn-primary" style="width:100%" onclick="doLogin()">
         <i class="ti ti-login"></i> Sign in
       </button>
-      <p class="login-hint">Demo credentials: <strong>admin</strong> / <strong>admin123</strong></p>
     </div>
   </div>`;
 }
 
-/* ── Shell (sidebar + topbar + content) ──────── */
+
 function renderShell() {
   const prods = DB.products;
   const lowCount = prods.filter((p) => p.qty < 5).length;
@@ -323,7 +310,7 @@ function attachNavHandlers() {
   });
 }
 
-/* ── Page dispatcher ─────────────────────────── */
+
 function renderPage() {
   switch (S.page) {
     case "dashboard":
@@ -347,7 +334,7 @@ function renderPage() {
   }
 }
 
-/* ── Dashboard ───────────────────────────────── */
+
 function pageDashboard() {
   const prods = DB.products;
   const sups = DB.suppliers;

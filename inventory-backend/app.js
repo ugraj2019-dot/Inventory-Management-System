@@ -3,7 +3,6 @@ import cors from "cors";
 import { loggers } from "./middlewares/loggers.js";
 import productRoutes from "./routes/productRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
-import userRoutes from "./routes/userRoutes.js";
 import "./models/index.js";
 import { notFoundHandler, errorHandler } from "./middlewares/errorHandler.js";
 
@@ -27,7 +26,6 @@ app.get("/api/health", (_req, res) => {
 
 app.use("/api/products", productRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

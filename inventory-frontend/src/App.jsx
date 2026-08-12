@@ -6,7 +6,6 @@ import AddProduct from "./Pages/AddProduct";
 import ProductDetail from "./Pages/ProductDetail";
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
-import AdminUsers from "./Pages/AdminUsers";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
@@ -26,10 +25,8 @@ function Layout() {
           <main className="page-body">
             <Routes>
               <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-              <Route path="/products" element={<ProtectedRoute><Home /></ProtectedRoute>} />
               <Route path="/add" element={<ProtectedRoute><AddProduct /></ProtectedRoute>} />
               <Route path="/product/:id" element={<ProtectedRoute><ProductDetail /></ProtectedRoute>} />
-              <Route path="/admin/users" element={<ProtectedRoute><AdminUsers /></ProtectedRoute>} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
             </Routes>

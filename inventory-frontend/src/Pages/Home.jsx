@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
@@ -38,27 +38,35 @@ export default function Home() {
   const [products, setProducts] = useState([]);
   const [summary, setSummary] = useState(null);
   const [search, setSearch] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
-  async function load() {
+  const load = useCallback(async (query = "") => {
     setLoading(true);
     try {
-      const [items, stats] = await Promise.all([getProducts(token, search), getInventorySummary(token)]);
+      const [items, stats] = await Promise.all([getProducts(token, query), getInventorySummary(token)]);
       setProducts(items);
       setSummary(stats);
     } catch (err) {
       toast.error(err.message || "Could not load inventory");
-    } finally { setLoading(false); }
-  }
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
 
-  useEffect(() => { load(); }, [token, search]);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setSearchQuery(search.trim()), 250);
+    return () => window.clearTimeout(timer);
+  }, [search]);
+
+  useEffect(() => { load(searchQuery); }, [load, searchQuery]);
 
   async function handleDelete(id) {
     if (!window.confirm("Delete this product from inventory?")) return;
     try {
       await deleteProduct(id, token);
       toast.success("Product deleted");
-      load();
+      load(searchQuery);
     } catch (err) { toast.error(err.message || "Could not delete product"); }
   }
 
@@ -113,7 +121,12 @@ export default function Home() {
           </div>
           <div className="search-wrap toolbar-search">
             <i className="ti ti-search"></i>
-            <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search products, SKU or category..." />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search products, SKU or category..."
+              aria-label="Search products"
+            />
           </div>
         </div>
 

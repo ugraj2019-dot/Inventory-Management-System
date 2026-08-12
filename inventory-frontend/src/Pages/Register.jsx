@@ -94,10 +94,6 @@ export default function Register() {
           </div>
         </form>
 
-        <p style={{ marginTop: "1rem", textAlign: "center", fontSize: "0.9rem" }}>
-          Default administrator: <strong>admin / admin123</strong>
-        </p>
-
         <p className="auth-footer">
           Already have an account?{" "}
           <Link className="auth-link" to="/login">Sign in</Link>

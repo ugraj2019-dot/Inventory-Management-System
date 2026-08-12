@@ -26,7 +26,7 @@ export default function Login() {
         <div className="form-group" style={{marginBottom:"1.5rem"}}><label>Password</label><input type="password" value={password} onChange={e=>setPassword(e.target.value)} autoComplete="current-password" required /></div>
         <button className="btn btn-primary" style={{width:"100%",justifyContent:"center"}}><i className="ti ti-login"></i> Sign in</button>
       </form>
-      <p className="login-hint" style={{marginBottom:"0.5rem"}}>Default admin: <strong>admin / admin123</strong></p><p className="login-hint">New here? <Link className="auth-link" to="/register">Create an account</Link></p>
+      <p className="login-hint">New here? <Link className="auth-link" to="/register">Create an account</Link></p>
     </div>
   </div>;
 }

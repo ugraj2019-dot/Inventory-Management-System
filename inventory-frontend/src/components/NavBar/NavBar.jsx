@@ -27,21 +27,9 @@ export default function NavBar() {
         <NavLink to="/" end className={({isActive}) => `nav-item ${isActive ? "active" : ""}`}>
           <i className="ti ti-layout-dashboard nav-icon"></i> Dashboard
         </NavLink>
-        <NavLink to="/products" className={({isActive}) => `nav-item ${isActive ? "active" : ""}`}>
-          <i className="ti ti-box nav-icon"></i> Products
-        </NavLink>
         <NavLink to="/add" className={({isActive}) => `nav-item ${isActive ? "active" : ""}`}>
           <i className="ti ti-circle-plus nav-icon"></i> Add Product
         </NavLink>
-
-        {user.role === "admin" && (
-          <>
-            <p className="nav-section-label" style={{marginTop: "1.2rem"}}>Administration</p>
-            <NavLink to="/admin/users" className={({isActive}) => `nav-item ${isActive ? "active" : ""}`}>
-              <i className="ti ti-users nav-icon"></i> Manage Users
-            </NavLink>
-          </>
-        )}
       </nav>
 
       <div className="sidebar-footer">

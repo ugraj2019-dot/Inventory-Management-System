@@ -5,6 +5,26 @@ const fields = ["name", "sku", "category", "quantity", "reorderLevel", "unitPric
 
 const scope = (role, userId) => role === "admin" ? {} : { userId };
 
+const duplicateError = (field) => {
+  const error = new Error(`A product with this ${field} already exists`);
+  error.status = 409;
+  return error;
+};
+
+async function ensureUniqueProduct({ name, sku, userId, excludeId }) {
+  const exclusion = excludeId ? { id: { [Op.ne]: excludeId } } : {};
+
+  const duplicateName = await Product.findOne({
+    where: { name, userId, ...exclusion },
+  });
+  if (duplicateName) throw duplicateError("name");
+
+  const duplicateSku = await Product.findOne({
+    where: { sku, userId, ...exclusion },
+  });
+  if (duplicateSku) throw duplicateError("SKU");
+}
+
 export const ProductService = {
   getAllProducts: async (userId, role, search = "") => {
     const where = scope(role, userId);
@@ -23,12 +43,7 @@ export const ProductService = {
   },
 
   createProduct: async (data, userId) => {
-    const duplicate = await Product.findOne({ where: { sku: data.sku, userId } });
-    if (duplicate) {
-      const error = new Error("A product with this SKU already exists");
-      error.status = 409;
-      throw error;
-    }
+    await ensureUniqueProduct({ name: data.name, sku: data.sku, userId });
     return Product.create({
       ...Object.fromEntries(fields.filter((field) => data[field] !== undefined).map((field) => [field, data[field]])),
       userId,
@@ -38,15 +53,15 @@ export const ProductService = {
   updateProduct: async (id, data, userId, role) => {
     const product = await Product.findOne({ where: { id, ...scope(role, userId) } });
     if (!product) return null;
-    if (data.sku && data.sku !== product.sku) {
-      const duplicate = await Product.findOne({
-        where: { sku: data.sku, userId: product.userId, id: { [Op.ne]: id } }
+    const name = data.name ?? product.name;
+    const sku = data.sku ?? product.sku;
+    if (name !== product.name || sku !== product.sku) {
+      await ensureUniqueProduct({
+        name,
+        sku,
+        userId: product.userId,
+        excludeId: product.id,
       });
-      if (duplicate) {
-        const error = new Error("A product with this SKU already exists");
-        error.status = 409;
-        throw error;
-      }
     }
     fields.forEach((field) => {
       if (data[field] !== undefined) product[field] = data[field];
